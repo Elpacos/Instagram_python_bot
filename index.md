@@ -1,37 +1,80 @@
-## Welcome to GitHub Pages
-
-You can use the [editor on GitHub](https://github.com/Elpacos/Instagram_python_bot/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
-Syntax highlighted code block
+from instapy import InstaPy
+import json
+import getpass
+import os
+from time import sleep
 
-# Header 1
-## Header 2
-### Header 3
+os.system('CLS')
+#get stored tables
+with open('data.txt') as json_file:
+	data = json.load(json_file)
+input("WELCOME TO THE PYTHON INSTAGRAM BOT")
 
-- Bulleted
-- List
+os.system('CLS')
 
-1. Numbered
-2. List
+#user credentials
+insta_username = input('INSERT USERNAME: ')
+insta_password = getpass.getpass('INSERT PASSWORD: ')
 
-**Bold** and _Italic_ and `Code` text
+os.system('CLS')
+tag_array = data['tags']
+comments_array = data['comments']
 
-[Link](url) and ![Image](src)
+#set or change tags
+print('TAGS:')
+print(*tag_array, sep=' ')
+if (input("\nDo you want to change the current tags of the bot? y or ENTER ") == "y"):
+	tag_array = input('Insert new tags: ').split()
+
+os.system('CLS')
+
+#set or change comments
+print('COMMENTS:')
+print(*comments_array, sep=' ')
+if (input("\nDo you want to change the current comments of the bot? y or ENTER ") == "y"):
+	comments_array.clear()
+	number = input('\nHow many comments?: ')
+	for i in range(int(number)):
+		comments_array.append(input('Tag ' + str(i + 1) + ': '))
+os.system('CLS')
+
+data['tags'] = tag_array
+data['comments'] = comments_array
+
+
+#store tags and comments values
+with open('data.txt', 'w') as outfile:
+	json.dump(data, outfile)
+print('\nSTORED: ' + str(data))
+sleep(1)
+print('\nStarting main bot process')
+sleep(1)
+os.system('CLS')
+
+
+session = InstaPy(username=insta_username, password=insta_password)
+session.login()
+
+# set up all the settings
+session.set_relationship_bounds(enabled=True,
+                                potency_ratio=-1.28,
+                                delimit_by_numbers=True,
+                                max_followers=8000,
+                                max_following=9000,
+                                min_followers=45,
+                                min_following=77)
+session.set_do_follow(True, percentage=90)
+session.set_do_comment(True, percentage=98)
+session.set_comments(comments_array)
+session.set_dont_like(["naked", "nsfw"])
+
+# do the actual liking
+session.like_by_tags(tag_array, amount=25)
+
+# end the bot session
+session.end()
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Elpacos/Instagram_python_bot/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
